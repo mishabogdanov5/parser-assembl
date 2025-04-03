@@ -1,6 +1,5 @@
 open Alcotest
 
-
 let test_fact ()= 
   check int "default value" 720 (Parser.fact 6);
   check int "one" 1 (Parser.fact 1);
