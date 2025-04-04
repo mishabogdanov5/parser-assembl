@@ -21,7 +21,7 @@ let test_cases =
           Add (Div (Const 6, Const 3), Multi (Sub (Const 2, Const 4), Var "a"))
         ) );
     ( "a * b + (c - d) * e",
-      Add (Multi (Var "a", Var "b"), Multi (Sub (Var "c", Var "d"), Var "f")) );
+      Add (Multi (Var "a", Var "b"), Multi (Sub (Var "c", Var "d"), Var "e")) );
   ]
 
 let () =
