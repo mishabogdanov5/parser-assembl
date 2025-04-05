@@ -4,6 +4,9 @@ QEMU = qemu-riscv64
 FLAG = -march=rv64gc -o
 TARGET = file
 
+all:
+	dune exec parser
+
 build:
 	dune build
 test:
