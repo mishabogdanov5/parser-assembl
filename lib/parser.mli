@@ -17,5 +17,7 @@ type program = {
   main_args : expr list;
 }
 
-val parse : string -> (expr, string) result
-val parse_program : string -> (expr * string list * expr list, string) result
+val parse : string -> string -> (expr, string) result
+
+val parse_program :
+  string -> string -> (expr * string list * expr list, string) result

@@ -28,7 +28,7 @@ let () =
   let test_parser (input, expected) =
     let test_name = Printf.sprintf "Parsing: %s" input in
     test_case test_name `Quick (fun () ->
-        match parse input with
+        match parse input "left" with
         | Ok actual ->
             if not (expr_equal actual expected) then
               Alcotest.failf "Expected %s, actual %s" (expr_to_string expected)

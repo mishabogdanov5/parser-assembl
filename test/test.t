@@ -37,3 +37,18 @@ $Prog tests
   $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
   $ qemu-riscv64 expr.exe
                                  7
+$assoc test
+  $ echo "fun f x y z = x + y - z" > expr1.txt
+  $ echo "fun main = f 3 5 6" >> expr1.txt
+  $ ../bin/main.exe expr1.txt "right"
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr1.o
+  $ riscv64-unknown-elf-ld expr1.o rv64_runtime.o -o expr1.exe
+  $ qemu-riscv64 expr1.exe
+                                 4
+  $ echo "fun f x y z = x + y - z" > expr1.txt
+  $ echo "fun main = f 3 5 6" >> expr1.txt
+  $ ../bin/main.exe expr1.txt
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr1.o
+  $ riscv64-unknown-elf-ld expr1.o rv64_runtime.o -o expr1.exe
+  $ qemu-riscv64 expr1.exe
+                                 2

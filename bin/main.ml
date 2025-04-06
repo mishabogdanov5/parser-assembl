@@ -74,7 +74,8 @@ let () =
       close_in ic;
       input
   in
-  let parsed_expr = parse_program input in
+  let assoc = if Array.length Sys.argv < 3 then "left" else Sys.argv.(2) in
+  let parsed_expr = parse_program input assoc in
   match parsed_expr with
   | Ok res ->
       let code = generate_asm_prog res in
