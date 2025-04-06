@@ -13,22 +13,24 @@ let expr_equal a b = expr_to_string a = expr_to_string b
 
 let test_cases =
   [
-    ("2 + 3 - 10", Add (Const 2, Sub (Const 3, Const 10)));
-    ("5 * (2 + 4) - 1", Sub (Multi (Const 5, Add (Const 2, Const 4)), Const 1));
+    ("2 + 3 - 10", Const (-5), "left");
+    ("5 * (2 + 4) - 1", Const 29, "left");
     ( "10 + 6 / 3 + (2 - 4) * a",
-      Add
-        ( Const 10,
-          Add (Div (Const 6, Const 3), Multi (Sub (Const 2, Const 4), Var "a"))
-        ) );
+      Add (Const 10, Add (Const 2, Multi (Const (-2), Var "a"))),
+      "left" );
     ( "a * b + (c - d) * e",
-      Add (Multi (Var "a", Var "b"), Multi (Sub (Var "c", Var "d"), Var "e")) );
+      Add (Multi (Var "a", Var "b"), Multi (Sub (Var "c", Var "d"), Var "e")),
+      "left" );
+    ( "(5 / (7 + 3)) * 8 + a * b",
+      Add (Multi (Var "b", Var "a"), Const 16),
+      "right" );
   ]
 
 let () =
-  let test_parser (input, expected) =
+  let test_parser (input, expected, assoc) =
     let test_name = Printf.sprintf "Parsing: %s" input in
     test_case test_name `Quick (fun () ->
-        match parse input "left" with
+        match parse input assoc with
         | Ok actual ->
             if not (expr_equal actual expected) then
               Alcotest.failf "Expected %s, actual %s" (expr_to_string expected)

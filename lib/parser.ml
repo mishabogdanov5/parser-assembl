@@ -30,10 +30,34 @@ let var_p =
   return (Var s)
 
 let skobki_p p = ws *> char '(' *> p <* char ')'
-let add_op = ws *> char '+' *> return (fun x y -> Add (x, y))
-let sub_op = ws *> char '-' *> return (fun x y -> Sub (x, y))
-let multi_op = ws *> char '*' *> return (fun x y -> Multi (x, y))
-let div_op = ws *> char '/' *> return (fun x y -> Div (x, y))
+
+let add_op =
+  ws *> char '+'
+  *> return (fun x y ->
+         match (x, y) with
+         | Const n, Const k -> Const (n + k)
+         | _, _ -> Add (x, y))
+
+let sub_op =
+  ws *> char '-'
+  *> return (fun x y ->
+         match (x, y) with
+         | Const n, Const k -> Const (n - k)
+         | _, _ -> Sub (x, y))
+
+let multi_op =
+  ws *> char '*'
+  *> return (fun x y ->
+         match (x, y) with
+         | Const n, Const k -> Const (n * k)
+         | _, _ -> Multi (x, y))
+
+let div_op =
+  ws *> char '/'
+  *> return (fun x y ->
+         match (x, y) with
+         | Const n, Const k -> Const (n / k)
+         | _, _ -> Div (x, y))
 
 let rec left_assoc_parse elem op =
   elem >>= fun x ->
