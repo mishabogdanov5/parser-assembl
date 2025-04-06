@@ -13,6 +13,68 @@ let binop op =
     "lw t0, 0(sp)\nlw t1, 4(sp)\n%s t2, t1, t0\naddi sp, sp, 4\nsw t2, 0(sp)\n"
     op
 
+let sli_offsets expr =
+  match expr with
+  | Const n -> (
+      match n with
+      | 2 -> [ 1 ]
+      | 4 -> [ 2 ]
+      | 8 -> [ 3 ]
+      | 16 -> [ 4 ]
+      | 32 -> [ 5 ]
+      | 64 -> [ 6 ]
+      | 128 -> [ 7 ]
+      | 256 -> [ 8 ]
+      | 512 -> [ 9 ]
+      | 1024 -> [ 10 ]
+      | num ->
+          let pow x n =
+            let rec helper1 acc x = function
+              | 0 -> acc
+              | n when n mod 2 = 0 -> helper1 acc (x * x) (n / 2)
+              | n -> helper1 (acc * x) x (n - 1)
+            in
+            helper1 1 x n
+          in
+          let rec helper r p ls =
+            match p with
+            | 0 -> if r = 1 then 0 :: ls else ls
+            | oth ->
+                let pr = pow 2 oth in
+                if pr <= r then helper (r - pr) (p - 1) (oth :: ls)
+                else helper r (p - 1) ls
+          in
+          helper num 31 [])
+  | Add (_, _) | Sub (_, _) | Multi (_, _) | Div (_, _) | Var _ -> [ -1 ]
+
+let sli_op expr =
+  let offset = sli_offsets expr in
+  match offset with
+  | [ -1 ] ->
+      Printf.sprintf
+        "lw t0, 0(sp)\n\
+         lw t1, 4(sp)\n\
+         mul t2, t1, t0\n\
+         addi sp, sp, 4\n\
+         sw t2, 0(sp)\n"
+  | [] -> Printf.sprintf "li t2, 0\naddi sp, sp, 4\nsw t2, 0(sp)\n"
+  | _ ->
+      let rec fill_offset acc ls =
+        match ls with
+        | [] -> List.fold_left (fun x y -> Printf.sprintf "%s" y ^ x) "" acc
+        | h :: t ->
+            fill_offset
+              ((Printf.sprintf
+                  "lw t0, 0(sp)\n\
+                   slli t2, t0, %s\n\
+                   addi sp, sp, 4\n\
+                   sw t2, 0(sp)\n")
+                 (string_of_int h)
+              :: acc)
+              t
+      in
+      fill_offset [] offset
+
 let generate_expr expr =
   let rec helper = function
     | Add (e1, e2) ->
@@ -20,7 +82,7 @@ let generate_expr expr =
     | Sub (e1, e2) ->
         Printf.sprintf "%s%s%s" (helper e1) (helper e2) (binop "sub")
     | Multi (e1, e2) ->
-        Printf.sprintf "%s%s%s" (helper e1) (helper e2) (binop "mul")
+        Printf.sprintf "%s%s%s" (helper e1) (helper e2) (sli_op e1)
     | Div (e1, e2) ->
         Printf.sprintf "%s%s%s" (helper e1) (helper e2) (binop "div")
     | Const n -> li "t0" n ^ push "t0"
