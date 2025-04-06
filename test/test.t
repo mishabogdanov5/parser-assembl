@@ -1,9 +1,31 @@
 $Prog tests
-  $ echo "fun f x y z = x + y + z" > expr1.txt
-  $ echo "fun main = f 2 3 4" >> expr1.txt
-  $ ../bin/main.exe expr1.txt
-  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr1.o
+
   $ riscv64-unknown-elf-as -march=rv64gc rv64_runtime.s -o rv64_runtime.o
-  $ riscv64-unknown-elf-ld expr1.o rv64_runtime.o -o expr1.exe
-  $ qemu-riscv64 expr1.exe
-                                 9
+  $ echo "fun f x y z = x + y + z" > expr.txt
+  $ echo "fun main = f 5 5 4" >> expr.txt
+  $ ../bin/main.exe expr.txt
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr.o
+  $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
+  $ qemu-riscv64 expr.exe
+                                14
+  $ echo "fun f x y z = x - y / z" > expr.txt
+  $ echo "fun main = f 8 4 2" >> expr.txt
+  $ ../bin/main.exe expr.txt
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr.o
+  $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
+  $ qemu-riscv64 expr.exe
+                                 6
+  $ echo "fun f x y = x - y" > expr.txt
+  $ echo "fun main = f 12 4" >> expr.txt
+  $ ../bin/main.exe expr.txt
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr.o
+  $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
+  $ qemu-riscv64 expr.exe
+                                 8
+  $ echo "fun f x y z v = (x - y) * v + z" > expr.txt
+  $ echo "fun main = f 10 5 10 2" >> expr.txt
+  $ ../bin/main.exe expr.txt
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr.o
+  $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
+  $ qemu-riscv64 expr.exe
+                                20

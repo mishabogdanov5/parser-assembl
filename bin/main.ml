@@ -44,7 +44,7 @@ let generate_asm_prog (body, params, main_args) =
   let template =
     Printf.sprintf
       ".section .data\n\
-      \ .align 4\n\
+      \ .align 8\n\
        %s\n\
        .section .text\n\
        .globl _start\n\
@@ -57,7 +57,7 @@ let generate_asm_prog (body, params, main_args) =
        li a7, 93\n\
        ecall\n"
   in
-  template (String.concat "\n" asm_args) asm_expr
+  template (String.concat "\n" asm_args) asm_expr ^ "\n"
 
 let write_to_file filename str =
   let oc = open_out filename in
