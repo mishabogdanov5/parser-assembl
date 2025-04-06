@@ -29,3 +29,11 @@ $Prog tests
   $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
   $ qemu-riscv64 expr.exe
                                 20
+
+  $ echo "fun f x y z v u g h n = (x - 2 * (z + y)) / (h - u) + (n - g) * v" > expr.txt
+  $ echo "fun main = f 44 3 5 2 4 1 8 1" >> expr.txt
+  $ ../bin/main.exe expr.txt
+  $ riscv64-unknown-elf-as -march=rv64gc output.s -o expr.o
+  $ riscv64-unknown-elf-ld expr.o rv64_runtime.o -o expr.exe
+  $ qemu-riscv64 expr.exe
+                                 7
