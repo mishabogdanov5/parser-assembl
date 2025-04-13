@@ -1,3 +1,4 @@
 (library
  (name parser)
+ (modules parser parser_lambda)
  (libraries angstrom))
