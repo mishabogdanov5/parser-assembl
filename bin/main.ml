@@ -2,7 +2,8 @@
 
 (** SPDX-License-Identifier: LGPL-3.0-or-later *)
 
-open Parser
+open Parser.Parser_expr
+open Parser.Parserl
 
 let lw = Printf.sprintf "lw %s, %s\n"
 let li = Printf.sprintf "li %s, %d\n"
@@ -126,9 +127,25 @@ let write_to_file filename str =
   Printf.fprintf oc "%s" str;
   close_out oc
 
+let rec pp_term = function
+  | Varl x -> x
+  | Abs (x, t) -> Printf.sprintf "(\\%s.%s)" x (pp_term t)
+  | App (t1, t2) ->
+      let s1 = match t1 with Abs _ -> pp_term t1 | _ -> pp_term t1 in
+      let s2 =
+        match t2 with Varl _ -> pp_term t2 | _ -> "(" ^ pp_term t2 ^ ")"
+      in
+      Printf.sprintf "%s %s" s1 s2
+
 let () =
   let input =
     if Array.length Sys.argv < 2 then exit 1
+    else if Sys.argv.(1) = "lambda" then (
+      let filename = Sys.argv.(2) in
+      let ic = open_in filename in
+      let input = really_input_string ic (in_channel_length ic) in
+      close_in ic;
+      input)
     else
       let filename = Sys.argv.(1) in
       let ic = open_in filename in
@@ -136,10 +153,16 @@ let () =
       close_in ic;
       input
   in
-  let assoc = if Array.length Sys.argv < 3 then "left" else Sys.argv.(2) in
-  let parsed_expr = parse_program input assoc in
-  match parsed_expr with
-  | Ok res ->
-      let code = generate_asm_prog res in
-      write_to_file "output.s" code
-  | Error _ -> print_string "djfakjfd"
+  if Sys.argv.(1) = "lambda" then
+    let parsed_lambda = parse_lambda input in
+    match parsed_lambda with
+    | Ok res -> print_string (pp_term res)
+    | Error e -> Printf.printf "error: %s" e
+  else
+    let assoc = if Array.length Sys.argv < 3 then "left" else Sys.argv.(2) in
+    let parsed_expr = parse_program input assoc in
+    match parsed_expr with
+    | Ok res ->
+        let code = generate_asm_prog res in
+        write_to_file "output.s" code
+    | Error _ -> print_string "djfakjfd"
