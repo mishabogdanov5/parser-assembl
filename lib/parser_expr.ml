@@ -29,7 +29,7 @@ let var_p =
   ws *> take_while1 (function 'a' .. 'z' -> true | _ -> false) >>= fun s ->
   return (Var s)
 
-let skobki_p p = ws *> char '(' *> p <* char ')'
+let skobki_p p = ws *> char '(' *> p <* ws <* char ')'
 
 let add_op =
   ws *> char '+'

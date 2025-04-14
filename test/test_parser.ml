@@ -1,5 +1,5 @@
 open Alcotest
-open Parser
+open Parser.Parser_expr
 
 let rec expr_to_string = function
   | Const c -> string_of_int c
