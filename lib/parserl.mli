@@ -2,6 +2,13 @@
 
 (** SPDX-License-Identifier: LGPL-3.0-or-later *)
 
-type term = Varl of string | Abs of string * term | App of term * term
+type term =
+  | Value of string
+  | Var of string
+  | App of term * term
+  | Abs of string * term
+  | Let of string * term * term
+  | Rec of string * term * term
 
-val parse_lambda : string -> (term, string) result
+val parse : string -> (term, string) result
+val pp_lambda : term -> string

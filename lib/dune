@@ -1,4 +1,7 @@
 (library
  (name parser)
  (modules parserl parser_expr)
- (libraries angstrom))
+ (libraries angstrom)
+ (inline_tests)
+ (preprocess
+  (pps ppx_expect)))

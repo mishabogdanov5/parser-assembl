@@ -68,12 +68,4 @@ $sli tests
   $ qemu-riscv64 expr1.exe
                                 59
 
-lambda tests
-  $ echo "(Lx.x) y" > lambda1.txt
-  $ ../bin/main.exe lambda lambda1.txt
-  (\x.x) y
-
-  $ echo "Lx.Ly.x y" > lambda1.txt
-  $ ../bin/main.exe lambda lambda1.txt
-  (\x.(\y.x y))
 
