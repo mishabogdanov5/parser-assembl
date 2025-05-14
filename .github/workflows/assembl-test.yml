@@ -22,7 +22,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.opam
-          key: ${{ runner.os }}-ocaml-static-4.14
+          key: ${{ runner.os }}-ocaml-static-4.14.1
     
       - name: Ensure OPAM is available and install apt dependencies 
         if: steps.cache-ocaml.outputs.cache-hit == 'true'
