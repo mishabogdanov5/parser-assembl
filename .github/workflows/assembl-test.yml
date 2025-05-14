@@ -42,7 +42,7 @@ jobs:
       - name: Dependencies
         if: steps.cache-ocaml.outputs.cache-hit != 'true'
         run: |
-          opam install angstrom
+          opam install angstrom --yes
           opam install dune alcotest zanuda --yes
 
       - name: Build
